@@ -1,2 +1,2 @@
 # Kaelkyx
-Идея: Создать автоматизированный Ansible-скрипт с мониторингом ресурсов на основе Prometheus + NodeExporter + Grafana.
+Idea: Create an automated Ansible script with resource monitoring based on Prometheus + NodeExporter + Grafana.
