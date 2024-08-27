@@ -1,0 +1,58 @@
+---
+- name: Docker installer via Ansible
+  hosts: all
+  become: true
+  remote_user: root
+  gather_facts: false
+
+  tasks:
+    - name: Del unofficial packages
+      ansible.builtin.apt:
+        force_apt_get: true
+        name:
+          - docker.io
+          - docker-doc
+          - docker-compose
+          - docker-compose-v2
+          - podman-docker
+          - containerd
+          - runc
+        state: absent
+
+    - name: Update and install needes
+      ansible.builtin.apt:
+        update_cache: true
+        name:
+          - ca-certificates
+          - curl
+          - gpg
+        state: present
+
+    - name: Create dir for docker keys
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Get docker keys
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0755'
+
+    - name: Add repo to apt
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu jammy stable"
+        state: present
+        install_python_apt: true
+
+    - name: Install docker packages
+      ansible.builtin.apt:
+        force_apt_get: true
+        update-cache: true
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
